@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1200" width="1800" height="1200">
 	<style>
 		tspan { white-space:pre }
-		path { fill: #41d1f3; filter: url(#dropshadow); } 
-		#f, #i-dot { fill: #5edff7; } 
+		path { fill: white; filter: url(#dropshadow); }
+		#f, #i-dot { fill: white }
 	</style>
 	<filter id="dropshadow" height="130%">
 	  <feGaussianBlur in="SourceAlpha" stdDeviation="5"/>
