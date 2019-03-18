@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Scrum Poker (lite)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="favicon.ico">
+    <style>
+        body {
+            font-family: Verdana;
+            margin: 0;
+            background: #678;
+
+            position: relative;
+        }
+
+        .cards {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            font-size: 0;
+            perspective: 200vw;
+            width: 100vw;
+            height: 100vh;
+            padding: 4vh 2vw;
+            box-sizing: border-box;
+            place-content: center;
+            align-items: center;
+        }
+
+        .cards.hidden {
+            display: none;
+        }
+
+        .card {
+            position: relative;
+            width: 2em;
+            height: 3em;
+            line-height: 3em;
+            font-size: 6.75vh;
+            margin: 2vh 4vw;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .card.selected {
+            font-size: calc(10vh + 20vw);
+            margin: 0 auto;
+        }
+
+        .card.selected.flipped {
+            transform: rotateY(180deg);
+            transition: none;
+        }
+
+        .cards.selected .card:not(.selected) {
+            display: none !important;
+        }
+
+        .card .front, .card .back {
+            backface-visibility: hidden;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            border: 2px solid white;
+            background: rgb(36, 195, 239);
+            border-radius: 0.3em;
+            box-shadow: 0px 0px 0.03em rgba(0, 0, 0, 0.7), 0px 0px 0.1em rgba(0, 0, 0, 0.4);
+            color: white;
+            font-family: Verdana;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0 1px rgba(0, 0, 0, 1), 0 0 3px rgba(0, 0, 0, 0.6);
+        }
+
+        .card .back {
+            transform: rotateY(180deg);
+            background-image: url(fxbits.svg);
+            background-repeat: no-repeat;
+            background-color: #24c3ef;
+            background-position: center center;
+            background-size: 75%;
+        }
+
+        footer {
+            color: rgba(255, 255, 255, 0.5);
+            text-align: right;
+            font-size: 8pt;
+            display: inline-block;
+            position: absolute;
+            right: 2vw;
+            bottom: 1vh;
+            z-index: -1;
+        }
+
+        @media screen and (orientation: landscape) {
+            .card {
+                font-size: 6.6666vw;
+                margin: 4vh 3vw;
+            }
+
+            .card.selected {
+                font-size: 31vh;
+            }
+        }
+
+        .navigation {
+            width: 60px;
+            height: 60px;
+            font-size: 42px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background: #24c3ef;
+            color: white;
+
+            position: absolute;
+            top: 10px;
+            right: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .shirts.hidden {
+            display: none;
+        }
+
+        .slider-container {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        .slider-container header {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 15px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #24c3ef;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #24c3ef;
+            cursor: pointer;
+        }
+
+        .shirts {
+            height: 100vh;
+            padding-top: 110px;
+            box-sizing: border-box;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slider-container {
+            margin-bottom: 40px;
+        }
+
+        h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: white;
+        }
+
+    </style>
+</head>
+
+<body>
+<div class="navigation" id="sectionNav">M</div>
+
+<div class="cards">
+    <div class="card">
+        <div class="front">1</div>
+        <div class="back"></div>
+    </div>
+    <div class="card">
+        <div class="front">2</div>
+        <div class="back"></div>
+    </div>
+    <div class="card">
+        <div class="front">3</div>
+        <div class="back"></div>
+    </div>
+    <div class="card">
+        <div class="front">5</div>
+        <div class="back"></div>
+    </div>
+    <div class="card">
+        <div class="front">8</div>
+        <div class="back"></div>
+    </div>
+    <div class="card">
+        <div class="front">13</div>
+        <div class="back"></div>
+    </div>
+    <div class="card">
+        <div class="front">20</div>
+        <div class="back"></div>
+    </div>
+    <div class="card">
+        <div class="front">?</div>
+        <div class="back"></div>
+    </div>
+</div>
+
+<div class="shirts hidden">
+    <div class="slider-container">
+        <header>
+            <h3>Complexity</h3>
+            <h3 class="value">M</h3>
+        </header>
+        <input type="range" min="0" max="100" value="50" step="25" class="slider">
+    </div>
+
+    <div class="slider-container">
+        <header>
+            <h3>Uncertainty</h3>
+            <h3 class="value">M</h3>
+        </header>
+        <input type="range" min="0" max="100" value="50" step="25" class="slider">
+    </div>
+
+    <div class="slider-container">
+        <header>
+            <h3>Risk</h3>
+            <h3 class="value">M</h3>
+        </header>
+        <input type="range" min="0" max="100" value="50" step="25" class="slider">
+    </div>
+
+    <div class="slider-container">
+        <header>
+            <h3>Size</h3>
+            <h3 class="value">M</h3>
+        </header>
+        <input type="range" min="0" max="100" value="50" step="25" class="slider">
+    </div>
+</div>
+
+<footer>Made with &#x2764; by Flexibits</footer>
+
+<script>
+    const shirtContainer = document.querySelector('.shirts');
+    const cardsContainer = document.querySelector('.cards');
+
+    const sliders = document.getElementsByClassName('slider-container');
+
+    const getShirtSize = (value) => {
+        switch(value) {
+            case '0':
+                return 'XS';
+            case '25':
+                return 'S';
+            case '50':
+                return 'M';
+            case '75':
+                return 'L';
+            case '100':
+                return 'XL';
+        }
+    };
+
+    for(let sliderContainer of sliders) {
+        const slider = sliderContainer.getElementsByClassName('slider')[0];
+        const value = sliderContainer.getElementsByClassName('value')[0];
+
+        slider.oninput = () => {
+            value.innerHTML = getShirtSize(slider.value);
+        }
+    }
+
+    document.querySelectorAll('.card').forEach(div => {
+        div.addEventListener('click', () => {
+            const cls = div.classList;
+            if (cls.contains('selected')) {
+                if (cls.contains('flipped')) {
+                    cls.remove('flipped');
+                } else {
+                    cls.remove('selected');
+                    cardsContainer.classList.remove('selected');
+                }
+            } else {
+                cls.add('selected', 'flipped');
+                cardsContainer.classList.add('selected');
+            }
+        });
+    });
+
+    const navigationButton = document.getElementById('sectionNav');
+
+    navigationButton.addEventListener('click', () => {
+        if (cardsContainer.classList.contains('hidden')) {
+            cardsContainer.classList.remove('hidden');
+            shirtContainer.classList.add('hidden');
+            navigationButton.innerHTML = 'M';
+        } else {
+            cardsContainer.classList.add('hidden');
+            shirtContainer.classList.remove('hidden');
+            navigationButton.innerHTML = '8';
+        }
+    });
+
+</script>
+</body>
+
+</html>
