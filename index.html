@@ -122,9 +122,9 @@
             justify-content: center;
             z-index: 100;
 
-            box-shadow: -2px 4px 12px 0 rgba(0,0,0,0.28);
-            -webkit-box-shadow: -2px 4px 12px 0 rgba(0,0,0,0.28);
-            -moz-box-shadow: -2px 4px 12px 0 rgba(0,0,0,0.28);
+            box-shadow: -2px 4px 12px 0 rgba(0, 0, 0, 0.28);
+            -webkit-box-shadow: -2px 4px 12px 0 rgba(0, 0, 0, 0.28);
+            -moz-box-shadow: -2px 4px 12px 0 rgba(0, 0, 0, 0.28);
         }
 
         .navigation img {
@@ -139,7 +139,7 @@
         .slider-container {
             width: 80%;
             margin: 0 auto;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .slider-container header {
@@ -195,6 +195,12 @@
             margin-bottom: 14px;
             font-size: 24px;
             color: white;
+        }
+
+        #calculatedStoryPoints {
+            font-size: 48px;
+            color: #7698B3;
+            text-align: center;
         }
 
     </style>
@@ -272,18 +278,40 @@
         </header>
         <input type="range" min="0" max="100" value="50" step="25" class="slider">
     </div>
+
+    <div id="calculatedStoryPoints">
+
+    </div>
 </div>
 
 <footer>Made with &#x2764; by Flexibits</footer>
 
 <script>
-    const shirtContainer = document.querySelector('.shirts');
-    const cardsContainer = document.querySelector('.cards');
 
-    const sliders = document.getElementsByClassName('slider-container');
+    let estimations = [
+        ['S', 'S', 'S', 'S', 1],
+        ['M', 'M', 'S', 'M', 3],
+        ['M', 'S', 'M', 'L', 5],
+        ['L', 'M', 'L', 'M', 8],
+        ['L', 'M', 'XL', 'S', 13],
+        ['M', 'M', 'S', 'M', 3],
+        ['XL', 'M', 'S', 'L', 13],
+        ['M', 'S', 'S', 'L', 5],
+        ['M', 'S', 'M', 'L', 5],
+        ['M', 'M', 'S', 'M', 3],
+        ['S', 'S', 'S', 'M', 2],
+        ['M', 'S', 'S', 'M', 3],
+        ['L', 'L', 'S', 'S', 5],
+        ['XL', 'M', 'M', 'L', 13],
+        ['M', 'L', 'S', 'S', 3],
+        ['S', 'S', 'S', 'S', 2],
+        ['M', 'M', 'M', 'M', 5],
+        ['L', 'M', 'L', 'L', 8],
+        ['M', 'S', 'S', 'M', 3]
+    ];
 
-    const getShirtSize = (value) => {
-        switch(value) {
+    const numberToShirt = (value) => {
+        switch (value) {
             case '0':
                 return 'XS';
             case '25':
@@ -297,14 +325,75 @@
         }
     };
 
-    for(let sliderContainer of sliders) {
+    const shirtToNumber = (value) => {
+        switch (value) {
+            case 'XS':
+                return 0;
+            case 'S':
+                return 25;
+            case 'M':
+                return 50;
+            case 'L':
+                return 75;
+            case 'XL':
+                return 100;
+        }
+    };
+
+
+    const shirtContainer = document.querySelector('.shirts');
+    const cardsContainer = document.querySelector('.cards');
+    const sliders = document.getElementsByClassName('slider-container');
+
+    for (let sliderContainer of sliders) {
         const slider = sliderContainer.getElementsByClassName('slider')[0];
         const value = sliderContainer.getElementsByClassName('value')[0];
 
         slider.oninput = () => {
-            value.innerHTML = getShirtSize(slider.value);
+            value.innerHTML = numberToShirt(slider.value);
+
+            updateStoryPoints(Array.from(document.getElementsByClassName('value')).map(value => value.innerHTML));
         }
     }
+
+    /*
+    * Find the most similar story from the past based on t-shirt sizes,
+    * and set the same number of story points for our story
+    * */
+    const updateStoryPoints = (sliderValues) => {
+        // maximum number of matched shirt sizes for our story
+        let maxMatch = 0;
+        let points = 1;
+
+        for (let estimation of estimations) {
+            const matches = getMatches(estimation, sliderValues);
+            if (matches > maxMatch) {
+                maxMatch = matches;
+                points = estimation[estimation.length - 1];
+            }
+        }
+
+        document.getElementById('calculatedStoryPoints').innerText = points;
+    };
+
+    const getMatches = (estimation, sliderValues) => {
+        let matches = 0;
+        estimation.slice(0, -1).forEach((value, index) => {
+            debugger;
+            if (value === sliderValues[index]) {
+                matches++;
+
+                if (value === 'L') {
+                    matches++;
+                }
+                if (value === 'XL') {
+                    matches += 2;
+                }
+            }
+        });
+
+        return matches;
+    };
 
     document.querySelectorAll('.card').forEach(div => {
         div.addEventListener('click', () => {
