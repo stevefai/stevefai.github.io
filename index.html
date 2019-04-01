@@ -198,7 +198,9 @@
         }
 
         #calculatedStoryPoints {
-            font-size: 48px;
+            font-size: 64px;
+            margin-top: 10px;
+
             color: #7698B3;
             text-align: center;
         }
@@ -383,11 +385,8 @@
             if (value === sliderValues[index]) {
                 matches++;
 
-                if (value === 'L') {
+                if (value === 'L' || value === 'XL') {
                     matches++;
-                }
-                if (value === 'XL') {
-                    matches += 2;
                 }
             }
         });
